@@ -16,7 +16,8 @@ This package is meant to help manage development environments using docker, whil
 ## Usage
 The repo comes with a symlink `cenv` to `capsulenv.py` to reduce typing, however once I complete a setup.py script, the idea is to install this as a `capsule` command in your OS.
 
-"""Manage capsule environments.
+```
+Manage capsule environments.
 
 Usage:
   capsulenv make <name> [options]
@@ -33,4 +34,4 @@ Options:
   --debug       Print debug messages.
   -h --help     Show this screen.
   --version     Show version.
-"""
+```
