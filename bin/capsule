@@ -8,13 +8,13 @@ import logging
 DOCS = """Manage capsule environments.
 
 Usage:
-  capsulenv make <name> [options]
-  capsulenv workon <name> [options]
-  capsulenv remove <name> [options]
-  capsulenv list [options]
-  capsulenv save <name> [options]
-  capsulenv load <filename> <name>
-  capsulenv pyhistory <name>
+  capsule make <name> [options]
+  capsule workon <name> [options]
+  capsule remove <name> [options]
+  capsule list [options]
+  capsule save <name> [options]
+  capsule load <filename> <name>
+  capsule pyhistory <name>
 
 Options:
   --baseimage
@@ -24,7 +24,7 @@ Options:
   --version     Show version.
 """
 
-VERSION = "1"
+VERSION = "0.1"
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARNING, format='[%(levelname)s] %(asctime)s %(message)s')
