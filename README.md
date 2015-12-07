@@ -14,7 +14,7 @@ This package is meant to help manage development environments using docker, whil
 3. `python setup.py install`
 
 ## Usage
-The setup script installs a `capsule` shell command that provides the interface described below. Any environment you creat is essentially a new docker container and will therefore maintain state next time you work on it. The `save` and `load` commands essentially export / import the environment to a tarfile.
+The setup script installs a `capsule` shell command that provides the interface described below. Any environment you create is essentially a new docker container and will therefore maintain state next time you work on it. The `save` and `load` commands essentially export / import the environment to a tarfile.
 
 The environment is an Ubuntu install with python 2.7 by default (I'll provide a python 3 option soon) and is configured to keep track of your python history when using the interpreter. This allows us to automatically export any experiments you run within the python interpreter to an iPythonNotebook through the `pyhistory` command.
 
