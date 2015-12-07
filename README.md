@@ -11,22 +11,24 @@ This package is meant to help manage development environments using docker, whil
 ## Install
 1. Setup and install [docker](http://docs.docker.com/linux/started/) or [docker-machine](https://www.docker.com/docker-toolbox) on your computer.
 2. `git clone` this repo.
-3. `pip install -r requirements.txt`
+3. `python setup.py install`
 
 ## Usage
-The repo comes with a symlink `cenv` to `capsulenv.py` to reduce typing, however once I complete a setup.py script, the idea is to install this as a `capsule` command in your OS.
+The setup script installs a `capsule` shell command that provides the interface described below. Any environment you creat is essentially a new docker container and will therefore maintain state next time you work on it. The `save` and `load` commands essentially export / import the environment to a tarfile.
+
+The environment is an Ubuntu install with python 2.7 by default (I'll provide a python 3 option soon) and is configured to keep track of your python history when using the interpreter. This allows us to automatically export any experiments you run within the python interpreter to an iPythonNotebook through the `pyhistory` command.
 
 ```
 Manage capsule environments.
 
 Usage:
-  capsulenv make <name> [options]
-  capsulenv workon <name> [options]
-  capsulenv remove <name> [options]
-  capsulenv list [options]
-  capsulenv save <name> [options]
-  capsulenv load <filename> <name>
-  capsulenv pyhistory <name>
+  capsule make <name> [options]
+  capsule workon <name> [options]
+  capsule remove <name> [options]
+  capsule list [options]
+  capsule save <name> [options]
+  capsule load <filename> <name>
+  capsule pyhistory <name>
 
 Options:
   --baseimage
@@ -35,3 +37,5 @@ Options:
   -h --help     Show this screen.
   --version     Show version.
 ```
+
+Note: please be patient the first time you run it, as it will take a little bit while we run a docker build to download and create the first container.
