@@ -2,6 +2,8 @@ This package is meant to help manage development environments using docker, whil
 
 **Note:** This code is in alpha stage. You're free to try it out and provide feedback, but keep in mind it will undergo heavy changes before it's production ready.
 
+[![Stories in Ready](https://badge.waffle.io/tryexceptpass/capsule.png?label=ready&title=Ready)](https://waffle.io/tryexceptpass/capsule)
+
 ## Features
 * Simple cli to create, switch to and delete environments that allow you to fiddle to your heart's content without breaking anything else. 
 * Currently this is based on a clean Ubuntu install (`ubuntu:latest` docker [image](https://hub.docker.com/_/ubuntu/)) with basic python 2.7 configured.
