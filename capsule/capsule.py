@@ -18,7 +18,7 @@ class Capsule(object):
 
     client = None
 
-    def __init__(self, name, baseimage="capsule", basetag="base"):
+    def __init__(self, name, baseimage="tryexceptpass/capsule", basetag="base"):
         """Make a new capsule environment"""
 
         logging.debug("Initializing")
