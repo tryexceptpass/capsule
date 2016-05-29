@@ -8,63 +8,60 @@ import io
 class DockerContainer(object):
     """Simple representation of a docker container as defined by a name and parent image"""
 
-    client = None
-
-    image = None
-    name = ""
-    config = None
-    container = None
-
-    def __init__(self, client, image, name):
-        self.client = client
+    def __init__(self, image, name, config=None, client=None):
         self.image = image
         self.name = name
+        self.client = client
+
+        self.container = None
+        self.config = None
 
     def __repr__(self):
-        return "%s<%s>" % (self.name, str(self.image))
+        return "<DockerContainer(" + self.name + "," + str(self.image) + ")>"
 
     def __str__(self):
-        return "%s<%s>" % (self.name, str(self.image))
+        return self.name + "<" + str(self.image) + ">"
 
-    def link(self, config):
-        self.config = create_host_config(links=config)
+    def sethostconfig(self, **kwargs):
+        """Set the host configuration when creating this container. Keyword arguments include:
+             * binds: bind host directory to container.
+             * links: link to another container.
+             * port_bindings: expose container ports to the host.
+             * lxc_conf
+             * priviledged
+             * dns
+             * volumes_from
+             * network_mode: bridge, none, container[id|name] or host.
+             * restart_policy
+             ...
+        There are several more at https://docker-py.readthedocs.io/en/stable/hostconfig/
+        """
 
-    def run(self, command='/bin/bash'):
+        self.config = create_host_config(kwargs)
+
+    def run(self, command='/bin/bash', client=None):
+        """Run the container and, if provided, execute the command"""
+
+        if client is None:
+            client = self.client
+
         status = None
-        create = True
+        container = None
 
         if self.container:
             container = self._findcontainerbyid(self.container['Id'])
-            # status = container['Status']
-            # create = False
-            # logging.debug("Container %s already exists", self.name)
-
-            # for container in self.client.containers(all=True):
-            #     if container['Id'] == self.container['Id']:
-            #         status = container['Status']
-            #         create = False
-            #         logging.debug("Container %s already exists", self.name)
-            #         break
         else:
             container = self._findcontainerbyname(self.name)
 
         if container is not None:
             self.container = container
             status = container['Status']
-            # create = False
             logging.debug("Container %s already exists", self.name)
-
-            # for container in self.client.containers(all=True):
-            #     if '/' + self.name in container['Names']:
-            #         self.container = container
-            #         status = container['Status']
-            #         create = False
-            #         logging.debug("Container %s already exists", self.name)
         else:
             if self.config:
-                self.container = self.client.create_container(name=self.name, command=command, image=str(self.image), tty=True, stdin_open=True, host_config=self.config)
+                self.container = client.create_container(name=self.name, command=command, image=str(self.image), tty=True, stdin_open=True, host_config=self.config)
             else:
-                self.container = self.client.create_container(name=self.name, command=command, image=str(self.image), tty=True, stdin_open=True)
+                self.container = client.create_container(name=self.name, command=command, image=str(self.image), tty=True, stdin_open=True)
             logging.debug("Container %s built from %s image", self.name, str(self.image))
 
         if status is None:
@@ -74,27 +71,48 @@ class DockerContainer(object):
 
         logging.debug("Started %s", self.name)
 
-    def _findcontainerbyname(self, name):
-        for container in self.client.containers(all=True):
+    def _findcontainerbyname(self, name, client=None):
+        if client is None:
+            client = self.client
+
+        for container in client.containers(all=True):
             if '/' + name in container['Names']:
                 return container
 
         return None
 
-    def _findcontainerbyid(self, id):
-        for container in self.client.containers(all=True):
-            if id == self.container['Id']:
+    def _findcontainerbyid(self, ident, client=None):
+        if client is None:
+            client = self.client
+
+        for container in client.containers(all=True):
+            if ident == container['Id']:
                 return container
 
         return None
 
-    def inspect(self):
-        return self.client.inspect_container(container=self.name)
+    def inspect(self, client=None):
+        """Retrieve a dictionary with container details"""
 
-    def stop(self, timeout=10):
-        self.client.stop(container=self.container['Id'], timeout=timeout)
+        if client is None:
+            client = self.client
 
-    def remove(self, volumes=True, force=True):
+        return client.inspect_container(container=self.name)
+
+    def stop(self, timeout=10, client=None):
+        """Stop a running container"""
+
+        if client is None:
+            client = self.client
+
+        client.stop(container=self.container['Id'], timeout=timeout)
+
+    def remove(self, volumes=True, force=True, client=None):
+        """Remove the container"""
+
+        if client is None:
+            client = self.client
+
         if self.container is None:
             container = self._findcontainerbyname(self.name)
 
@@ -103,20 +121,36 @@ class DockerContainer(object):
             else:
                 return
 
-        self.client.remove_container(container=self.container['Id'], force=force, v=volumes)
+        client.remove_container(container=self.container['Id'], force=force, v=volumes)
 
-    def restart(self):
-        self.client.restart(container=self.container['Id'])
+    def restart(self, client=None):
+        """Restart the running container"""
 
-    def start(self):
-        self.client.start(container=self.container['Id'])
+        if client is None:
+            client = self.client
+
+        client.restart(container=self.container['Id'])
+
+    def start(self, client=None):
+        """Start the container"""
+
+        if client is None:
+            client = self.client
+
+        client.start(container=self.container['Id'])
 
     def attach(self):
+        """Attach to the running container"""
+
         subprocess.Popen(['docker', 'attach', self.container['Id']]).communicate()
 
-    def copy(self, resource):
+    def copy(self, resource, client=None):
+        """Copy the container"""
+
+        if client is None:
+            client = self.client
+
         if (self.container is None):
             self.run()
 
-        return io.BytesIO(self.client.copy(container=self.container['Id'], resource=resource).read(cache_content=False))
-    
+        return io.BytesIO(client.copy(container=self.container['Id'], resource=resource).read(cache_content=False))

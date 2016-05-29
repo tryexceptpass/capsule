@@ -12,8 +12,6 @@ Usage:
   capsule workon <name> [options]
   capsule remove <name> [options]
   capsule list [options]
-  capsule save <name> [options]
-  capsule load <filename> <name>
   capsule pyhistory <name>
 
 Options:
@@ -24,10 +22,11 @@ Options:
   --version     Show version.
 """
 
-VERSION = "0.1"
+VERSION = "0.2"
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARNING, format='[%(levelname)s] %(asctime)s %(message)s')
+    logging.getLogger('requests').setLevel(logging.CRITICAL)
 
     arguments = docopt(DOCS, version=VERSION)
 
@@ -53,9 +52,6 @@ if __name__ == '__main__':
     elif arguments['remove']:
         cap = Capsule(arguments['<name>'])
         cap.remove()
-    elif arguments['save']:
-        cap = Capsule(arguments['<name>'])
-        cap.export()
     elif arguments['pyhistory']:
         cap = Capsule(arguments['<name>'])
         cap.pyhistory()

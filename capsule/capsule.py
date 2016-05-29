@@ -26,11 +26,11 @@ class Capsule(object):
         self.client = Client(**kwargs_from_env(assert_hostname=False))
         logging.debug("Connected client to docker socket")
 
-        self.baseimage = DockerImage(self.client, baseimage, basetag)
+        self.baseimage = DockerImage(baseimage, basetag, self.client)
 
         if name is None:
             return
-            
+
         if self.baseimage.exists():
             logging.info("Latest image is already stored locally")
         else:
@@ -45,7 +45,7 @@ class Capsule(object):
                 self.baseimage.build(".")
                 #self.baseimage = baseos.addtag('capsule', 'base')
 
-        self.environment = DockerContainer(self.client, self.baseimage, name)
+        self.environment = DockerContainer(self.baseimage, name, client=self.client)
 
     def start(self):
         """Start this capsule environment"""
