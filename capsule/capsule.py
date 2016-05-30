@@ -23,7 +23,7 @@ class Capsule(object):
 
         logging.debug("Initializing")
 
-        self.client = Client(**kwargs_from_env(assert_hostname=False))
+        self.client = Client(**kwargs_from_env())
         logging.debug("Connected client to docker socket")
 
         self.baseimage = DockerImage(baseimage, basetag, self.client)
